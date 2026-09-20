@@ -1,0 +1,85 @@
+# ==========================================
+# Arquivos Sensíveis e Credenciais
+# ==========================================
+Credenciais.md
+credenciais.*
+credentials.*
+.env
+.env.*
+*.env
+config/config.local.php
+config/db.local.php
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+
+# ==========================================
+# Especificidades do cPanel
+# ==========================================
+error_log
+**/error_log
+.well-known/
+cgi-bin/
+!.htaccess
+!.cpanel.yml
+
+# ==========================================
+# Dependências do Composer e Pacotes
+# ==========================================
+/vendor/
+node_modules/
+npm-debug.log
+
+# ==========================================
+# Dump de Banco de Dados e Backups
+# ==========================================
+*.sql
+!schema.sql
+*.dump
+*.sqlite
+*.db
+*.bak
+*.backup
+*.old
+
+# ==========================================
+# Arquivos Temporários, Cache e Logs
+# ==========================================
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.temp
+*.cache
+*~
+*.swp
+*.swo
+
+# ==========================================
+# Arquivos Gerados e Uploads
+# ==========================================
+uploads/
+storage/
+exports/
+
+# ==========================================
+# Configurações de IDEs e Editores
+# ==========================================
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# ==========================================
+# Arquivos do Sistema Operacional
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
