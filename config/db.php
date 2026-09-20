@@ -8,11 +8,68 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'ebill');
-define('DB_USER', 'servidor');
-define('DB_PASS', 'Nv32125');
-define('DB_CHARSET', 'utf8mb4');
+/**
+ * Utilitário para carregar variáveis de ambiente a partir do arquivo .env
+ */
+if (!function_exists('load_env')) {
+    function load_env($env_path = null) {
+        if ($env_path === null) {
+            $env_path = __DIR__ . '/../.env';
+        }
+        if (!file_exists($env_path)) {
+            return;
+        }
+        $lines = file($env_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '' || strncmp($line, '#', 1) === 0) {
+                continue;
+            }
+            if (strpos($line, '=') !== false) {
+                list($name, $value) = explode('=', $line, 2);
+                $name = trim($name);
+                $value = trim($value);
+                if ((substr($value, 0, 1) === '"' && substr($value, -1) === '"') ||
+                    (substr($value, 0, 1) === "'" && substr($value, -1) === "'")) {
+                    $value = substr($value, 1, -1);
+                }
+                if (!array_key_exists($name, $_SERVER) && !array_key_exists($name, $_ENV)) {
+                    putenv("{$name}={$value}");
+                    $_ENV[$name] = $value;
+                    $_SERVER[$name] = $value;
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Função helper para resgatar valor de ambiente com suporte a fallback
+ */
+if (!function_exists('env')) {
+    function env($key, $default = null) {
+        $val = getenv($key);
+        if ($val !== false) {
+            return $val;
+        }
+        if (isset($_ENV[$key])) {
+            return $_ENV[$key];
+        }
+        if (isset($_SERVER[$key])) {
+            return $_SERVER[$key];
+        }
+        return $default;
+    }
+}
+
+// Carrega as variáveis do .env na raiz do projeto
+load_env();
+
+define('DB_HOST', env('DB_HOST', 'localhost'));
+define('DB_NAME', env('DB_NAME', 'ebill'));
+define('DB_USER', env('DB_USER', 'root'));
+define('DB_PASS', env('DB_PASS', ''));
+define('DB_CHARSET', env('DB_CHARSET', 'utf8mb4'));
 
 function get_db_connection() {
     static $pdo = null;
@@ -26,9 +83,10 @@ function get_db_connection() {
             ];
             $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
         } catch (PDOException $e) {
-            die("<div style='font-family: sans-serif; padding: 20px; color: red;'>
-                <h2>Erro de Conexão com o Banco de Dados</h2>
-                <p>" . htmlspecialchars($e->getMessage()) . "</p>
+            die("<div style='font-family: sans-serif; padding: 20px; color: #b91c1c; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; margin: 20px;'>
+                <h2 style='margin-top: 0;'>Erro de Conexão com o Banco de Dados</h2>
+                <p><strong>Detalhes:</strong> " . htmlspecialchars($e->getMessage()) . "</p>
+                <p style='color: #4b5563; font-size: 14px;'>Certifique-se de que o arquivo <code>.env</code> está configurado corretamente na raiz do projeto (ou copie do <code>.env.example</code>).</p>
             </div>");
         }
     }

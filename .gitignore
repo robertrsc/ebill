@@ -6,6 +6,7 @@ credenciais.*
 credentials.*
 .env
 .env.*
+!.env.example
 *.env
 config/config.local.php
 config/db.local.php
